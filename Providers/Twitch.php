@@ -78,4 +78,40 @@ class Twitch extends Base
     }
     //endregion
 
+    //region Mock Rate Limits
+
+    /**
+     * @param bool $noRemaining
+     * @return array
+     */
+    public function rateLimitArray(bool $noRemaining = false): array
+    {
+        $reset = $this->generator->dateTimeInInterval('now', '+3 seconds')->getTimestamp();
+
+        $info = [
+            'RateLimit-Limit' => self::rateLimit(),
+            'RateLimit-Remaining' => 4,
+            'RateLimit-Reset' => $reset,
+        ];
+        if ($noRemaining) {
+            $info['RateLimit-Remaining'] = 0;
+        } else {
+            $info['RateLimit-Remaining'] = self::rateLimit($info['RateLimit-Limit']);
+        }
+
+        return $info;
+    }
+
+    /**
+     * @return int
+     */
+    public function rateLimit(int $max = 60)
+    {
+        if($max < 5) {
+            $max = 5;
+        }
+        return $this->generator->numberBetween(5, $max);
+    }
+    //endregion
+
 }

@@ -56,4 +56,35 @@ class TwitchTest extends TestCase
         $words = $this->faker->refreshToken();
         $this->assertEquals(30, strlen($words));
     }
+
+    /**
+     *
+     */
+    public function testRateLimit()
+    {
+        foreach(range(1, 10) as $j) {
+            foreach (range(-5, 65) as $index) {
+                $result = $this->faker->rateLimit($index);
+                $this->assertGreaterThanOrEqual(5, $result);
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    public function testRateLimitArray()
+    {
+        $result = $this->faker->rateLimitArray();
+        $this->assertArrayHasKey('RateLimit-Limit', $result);
+        $this->assertArrayHasKey('RateLimit-Remaining', $result);
+        $this->assertArrayHasKey('RateLimit-Reset', $result);
+
+        $result = $this->faker->rateLimitArray(true);
+        $this->assertArrayHasKey('RateLimit-Limit', $result);
+        $this->assertArrayHasKey('RateLimit-Remaining', $result);
+        $this->assertEquals(0, $result['RateLimit-Remaining']);
+        $this->assertArrayHasKey('RateLimit-Reset', $result);
+
+    }
 }
