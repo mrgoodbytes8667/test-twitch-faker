@@ -114,4 +114,12 @@ class Twitch extends Base
     }
     //endregion
 
+    /**
+     * @return string = ['live', 'playlist', 'watch_party', 'premiere', 'rerun'][$any]
+     */
+    public function streamType()
+    {
+        return $this->generator->randomElement(['live', 'playlist', 'watch_party', 'premiere', 'rerun']);
+    }
+
 }
