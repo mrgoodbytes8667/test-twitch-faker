@@ -4,11 +4,11 @@
     "description": "Twitch Faker provider",
     "require": {
         "php": "^7.4 | ^8.0",
-        "mrgoodbytes8667/test-common-faker": "^0.3.3"
+        "mrgoodbytes8667/test-common-faker": "^0.3.5"
     },
     "require-dev": {
-        "mrgoodbytes8667/twitch-response-bundle": "^0.2",
-        "symfony/phpunit-bridge": "^5.2"
+        "mrgoodbytes8667/twitch-response-bundle": "^0.4 | ^0.5",
+        "symfony/test-pack": "^1.0.9"
     },
     "authors": [
         {
@@ -23,6 +23,9 @@
         "mrgoodbytes8667/twitch-response-bundle": "Necessary for actual usage",
         "mrgoodbytes8667/test-common": "Common helper traits for PHPUnit with Symfony",
         "symfony/phpunit-bridge": "Integrate Symfony with PHPUnit"
+    },
+    "conflict": {
+        "phpunit/phpunit": "<9.5"
     },
     "autoload": {
         "psr-4": {
