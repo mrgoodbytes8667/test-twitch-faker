@@ -1056,6 +1056,16 @@ class Twitch extends Base
     ];
 
     /**
+     * @var string[]
+     */
+    protected static $broadcasterTypes = ['staff', 'admin', 'global_mod', ''];
+
+    /**
+     * @var string[]
+     */
+    protected static $types = ['affiliate', 'partner', ''];
+
+    /**
      * @param Generator $generator
      */
     public function __construct(Generator $generator)
@@ -1067,17 +1077,11 @@ class Twitch extends Base
     //region Token
 
     /**
-     * @param int $minChars
      * @return string
      */
-    public function id(int $minChars = 6): string
+    public function accessToken(): string
     {
-        $text = '';
-        do {
-            $text .= (string)$this->generator->numberBetween(1, 999999);
-        } while (strlen($text) <= $minChars);
-
-        return $text;
+        return $this->generator->randomAlphanumericString(30);
     }
 
     /**
@@ -1090,13 +1094,15 @@ class Twitch extends Base
     //endregion
 
     //region Mock Rate Limits
-
     /**
-     * @return string
+     * @return int
      */
-    public function accessToken(): string
+    public function rateLimit(int $max = 60)
     {
-        return $this->generator->randomAlphanumericString(30);
+        if ($max < 5) {
+            $max = 5;
+        }
+        return $this->generator->numberBetween(5, $max);
     }
 
     /**
@@ -1123,14 +1129,50 @@ class Twitch extends Base
     //endregion
 
     /**
-     * @return int
+     * @param int $minChars
+     * @return string
      */
-    public function rateLimit(int $max = 60)
+    public function id(int $minChars = 6): string
     {
-        if ($max < 5) {
-            $max = 5;
+        $text = '';
+        do {
+            $text .= (string)$this->generator->numberBetween(1, 999999);
+        } while (strlen($text) <= $minChars);
+
+        return $text;
+    }
+
+    private function buildUserName(int $minChars = 4, int $maxChars = 25, string $possibilities = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'): string {
+        if($minChars < 4) {
+            $minChars = 4;
+        } elseif($minChars > 25) {
+            $minChars = 25;
         }
-        return $this->generator->numberBetween(5, $max);
+        if($maxChars > 25) {
+            $maxChars = 25;
+        } elseif($maxChars < 4)
+        {
+            $maxChars = 4;
+        }
+        if($minChars > $maxChars)
+        {
+            $minChars = $maxChars;
+        }
+        $possibilities = str_split($possibilities);
+        $output = $this->generator->randomElement($possibilities);
+        $possibilities[] = '_';
+        foreach ($this->generator->rangeBetween($minChars, 2, $maxChars) as $i) {
+            $output .= $this->generator->randomElement($possibilities);
+        }
+        return $output;
+    }
+
+    public function displayName(int $minChars = 4, int $maxChars = 25): string {
+        return $this->buildUserName($minChars, $maxChars);
+    }
+
+    public function login(int $minChars = 4, int $maxChars = 25): string {
+        return $this->buildUserName($minChars, $maxChars, '0123456789abcdefghijkmnopqrstuvwxyz');
     }
 
     /**
@@ -1159,6 +1201,20 @@ class Twitch extends Base
     public function streamTags(int $count = 3, bool $allowDuplicates = false): array
     {
         return $this->generator->randomElements(static::$tags, $count, $allowDuplicates);
+    }
+
+    /**
+     * @return string = ['staff', 'admin', 'global_mod', ''][$any]
+     */
+    public function broadcasterType(): string {
+        return $this->generator->randomElement(static::$broadcasterTypes);
+    }
+
+    /**
+     * @return string = ['affiliate', 'partner', ''][$any]
+     */
+    public function type(): string {
+        return $this->generator->randomElement(static::$types);
     }
 
 }
